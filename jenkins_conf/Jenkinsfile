@@ -16,6 +16,15 @@ pipeline {
                 
         }
         }
+        stage('check image trivy') {
+            steps {
+                script {
+                    dockerImage.inside {
+                        sh 'trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress $DOCKER_IMAGE'
+                    }
+                }
+            }
+        }
         stage('Pushing image to DockerHub test') {
             steps {
                 script {
