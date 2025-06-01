@@ -9,8 +9,11 @@ services:
     user: "1000:1000"
     volumes:
       - /home/amin/jenkins_home:/var/jenkins_home
+      - ~/docker-certs/client:/certs
     environment:
-      DOCKER_HOST: tcp://dind:2376  
+      DOCKER_HOST: tcp://dind:2376 
+      DOCKER_CERT_PATH: /certs
+      DOCKER_TLS_VERIFY: "1"
     networks:
       - mynet
     depends_on:
@@ -21,9 +24,18 @@ services:
     privileged: true  
     ports:
       - "2375:2375"  
+    hostname: dind
     
     volumes:
-      - dind-data:/var/lib/docker  )
+      - dind-data:/var/lib/docker
+      - ~/docker-certs:/certs
+    environment:
+      DOCKER_TLS_CERTDIR: "/certs"
+      DOCKER_HOST: tcp://0.0.0.0:2376
+      # DOCKER_TLS_VERIFY: "1"
+      DOCKER_CERT_PATH: /certs
+
+    command: ["--tlscacert=/certs/ca/cert.pem", "--tlscert=/certs/server/cert.pem", "--tlskey=/certs/server/key.pem"]
     networks:
       - mynet
 
