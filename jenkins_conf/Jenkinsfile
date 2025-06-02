@@ -11,6 +11,15 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/bentaniamin1/express_app.git'
             }
         }
+
+        stage('Check filesystem with Trivy') {
+            steps {
+                script {
+                    sh "trivy fs --exit-code 1 --severity CRITICAL --no-progress ."
+                }
+            }
+        }
+        
         stage('Building our image') {
             steps{script {dockerImage = docker.build registry + ":$BUILD_NUMBER"}
                 
